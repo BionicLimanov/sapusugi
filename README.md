@@ -5,23 +5,6 @@ frontend. Containerized with Docker and orchestrated via docker-compose.
 
 ------------------------------------------------------------------------
 
-Architecture Overview
-=====================
-
-sapusugi-nextpython/ 
-├── backend/
-│   ├── main.py
-│   ├── schemas.py
-│   └── Dockerfile
-├── frontend/
-│   ├── pages/
-│   ├── components/
-│   ├── public/
-│   ├── package.json
-│   └── Dockerfile
-└── docker-compose.yml
-
-
 ------------------------------------------------------------------------
 
 Backend
