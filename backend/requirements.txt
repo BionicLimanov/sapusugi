@@ -185,7 +185,6 @@ tzdata==2025.2
 uri-template==1.3.0
 urllib3==2.5.0
 uvicorn==0.38.0
-uvloop==0.22.1
 watchdog==6.0.0
 watchfiles==1.1.1
 wcwidth==0.2.14

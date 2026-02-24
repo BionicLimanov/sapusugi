@@ -342,7 +342,7 @@ export default function Notebook() {
                     onClick={() => sugisuggest(i)}
                     className="bg-purple-700 hover:bg-purple-600 text-white px-3 py-1 rounded-lg text-xs font-medium transition-all opacity-0 group-hover:opacity-100"
                   >
-                    AI Suggest
+                    SUGIsugest
                   </button>
                 </>
               )}

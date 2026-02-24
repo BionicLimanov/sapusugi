@@ -7,10 +7,32 @@ frontend. Containerized with Docker and orchestrated via docker-compose.
 
 Architecture Overview
 
-sapusugi-nextpython/ │ ├── backend/ # Python API service │ ├── main.py │
-├── schemas.py │ ├── requirements.txt │ └── Dockerfile │ ├── frontend/ #
-Next.js application │ ├── pages/ │ ├── components/ │ ├── public/ │ ├──
-package.json │ └── Dockerfile │ ├── docker-compose.yml └── README.md
+sapusugi-nextpython/ 
+│ 
+├── backend/ # Python API service 
+│    │ 
+│    ├── main.py 
+│    │
+│    ├── schemas.py 
+│    │ 
+│    ├── requirements.txt 
+│    │ 
+│    └── Dockerfile 
+│ 
+├── frontend/ # Next.js application 
+│    │ 
+│    ├── pages/ 
+│    │ 
+│    ├── components/ 
+│    │ 
+│    ├── public/ 
+│    │ 
+│    ├── package.json 
+│    │ 
+│    └── Dockerfile 
+│ 
+├── docker-compose.yml 
+└── README.md
 
 ------------------------------------------------------------------------
 
