@@ -1,0 +1,34 @@
+pip install "fastapi[standard]" uvicorn <-- klo mau pake fastapi uvicorn
+
+
+ http://localhost:8889/lab?token=f6effc425ae795078c9ad223f486006f0004c7427f52b42b
+
+ to do list 
+ 1. benerin crawl4ai supaya bisa di pake as API 
+ 2. benerin notes supaya jdi lebih lengkap kyk di embedd
+ 3. benerin embedding jupyter notebook biar bisa di pake di satu page(index.tsx)
+
+
+ how to run this fookin shit
+ 1. uvicorn main:app --reload --host 0.0.0.0 --port 8000
+ 2. nyalain ollama yang docker 
+ 3. 
+ cd frontend
+
+# install deps (once)
+npm install
+
+# set API URL (IMPORTANT)
+export NEXT_PUBLIC_API_URL=http://localhost:8000
+# Windows (PowerShell):
+# setx NEXT_PUBLIC_API_URL http://localhost:8000
+
+# run frontend
+npm run dev
+
+command to run local jupyter 
+jupyter lab \
+  --ip=0.0.0.0 \
+  --port=8888 \
+  --no-browser \
+  --NotebookApp.token=tokentolkien

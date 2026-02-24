@@ -1,0 +1,22 @@
+[
+  {
+    "role": "system",
+    "content": "Be concise. Return code only when asked."
+  },
+  {
+    "role": "user",
+    "content": "hello"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello."
+  },
+  {
+    "role": "user",
+    "content": "what is majapahit"
+  },
+  {
+    "role": "assistant",
+    "content": "The Majapahit were a powerful and influential empire that flourished in Southeast Asia during the 14th to 15th centuries. They were the rulers of present-day Indonesia, Malaysia, and parts of the Philippines.\n\nThe Majapahit Empire was founded by Gajah Mada, a local ruler from Java who declared independence from the Mongol Empire in China. He then established his capital at Jayakarta (now Yogyakarta), which became the center of his empire.\n\nUnder the Majapahit dynasty, the empire expanded rapidly, absorbing neighboring kingdoms and territories through conquests and strategic alliances. The Majapahits were known for their advanced knowledge of astronomy, mathematics, medicine, and architecture.\n\nTheir art, literature, and music also flourished during this period. They produced exquisite wood carvings, textiles, and ceramics that are still highly prized today.\n\nThe Majapahit Empire declined in the early 15th century due to internal conflicts, external pressures from neighboring kingdoms, and environmental factors such as drought and pandemics. However, their legacy continues to be felt in Indonesian culture and identity."
+  }
+]

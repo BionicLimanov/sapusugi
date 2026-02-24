@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 222 47% 11%;
+  --foreground: 210 40% 98%;
+}
+
+body {
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.ql-editor {
+  color: white;
+  font-size: 14px;
+}
+
+.ql-toolbar.ql-snow,
+.ql-container.ql-snow {
+  border: 1px solid #374151 !important;
+}
+
+.ql-toolbar.ql-snow {
+  background: #1f2937;
+}
+
+.ql-container.ql-snow {
+  background: #111827;
+  height: 300px;
+}
+
+.ql-snow .ql-stroke {
+  stroke: #9ca3af;
+}
+
+.ql-snow .ql-fill {
+  fill: #9ca3af;
+}
+
+.ql-snow .ql-picker-label {
+  color: #9ca3af;
+}
+
+.chat-message-user {
+  @apply bg-green-600 text-white p-3 rounded-lg max-w-md ml-auto;
+}
+
+.chat-message-bot {
+  @apply bg-blue-600 text-white p-3 rounded-lg max-w-md mr-auto;
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  border: 2px solid rgba(255,255,255,0.25);
+  border-top-color: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  vertical-align: -2px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.spinner{display:inline-block;width:14px;height:14px;margin-right:8px;border:2px solid rgba(255,255,255,.25);border-top-color:rgba(255,255,255,.9);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px}
+@keyframes spin{to{transform:rotate(360deg)}}
