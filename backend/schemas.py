@@ -1,6 +1,7 @@
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
 
+
 # ---- Notes ----
 class NoteCreate(BaseModel):
     title: str = "Untitled"
@@ -58,3 +59,17 @@ class NBRunCellReq(BaseModel):
 class NBSuggestReq(BaseModel):
     path: str
     cell_index: int
+
+
+# ---no websocket dependencies---
+class GenerateRequest(BaseModel):
+    message: str
+    use_crawl: bool = False
+    use_pg: bool = False
+    urls: list[str] = []
+
+
+class GenerateResponse(BaseModel):
+    response: str
+
+# ----- real crawl4ai in use-----

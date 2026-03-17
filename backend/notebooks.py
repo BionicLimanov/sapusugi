@@ -20,7 +20,8 @@ from schemas import (
 # -------------------------
 
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:1b")
+# OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:1b")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5-coder:1.5b-base")
 
 NOTEBOOK_DIR = Path(os.getenv("NOTEBOOK_DIR", "./notebooks")).resolve()
 NOTEBOOK_DIR.mkdir(parents=True, exist_ok=True)
@@ -203,8 +204,11 @@ async def run_cell(req: NBRunCellReq):
         }
     else:
         raise HTTPException(500, "Cell execution failed")
+    
 
 
+
+# regular sugisuggest with post-get mechanism 
 @router.post("/suggest")
 async def suggest_fix(req: NBSuggestReq):
     p = _safe_nb_path(req.path)
@@ -220,49 +224,112 @@ async def suggest_fix(req: NBSuggestReq):
     outputs = cell.get("outputs", [])
     output_text = _outputs_to_text(outputs)
 
-    # Build the prompt based on whether there's an error or not
+    # Build strict code-only prompt
     if output_text and ("error" in output_text.lower() or "traceback" in output_text.lower()):
         prompt = (
-            "You are debugging a Jupyter notebook cell.\n\n"
+            "Fix the following Jupyter notebook Python cell.\n\n"
+            "Return ONLY the corrected Python code.\n"
+            "Do NOT include explanations, comments, markdown, or formatting.\n"
+            "Do NOT wrap in backticks.\n\n"
             "Cell source:\n"
-            "```python\n"
-            f"{source}\n"
-            "```\n\n"
-            "Cell output / error:\n"
-            "```\n"
+            f"{source}\n\n"
+            "Error:\n"
             f"{output_text}\n"
-            "```\n\n"
-            "Explain the root cause and propose a corrected version of the code.\n"
-            "Return strictly:\n"
-            "1. Short explanation\n"
-            "2. Corrected code only\n"
         )
     else:
         prompt = (
-            "You are reviewing a Jupyter notebook cell.\n\n"
-            "Cell source:\n"
-            "```python\n"
+            "Improve the following Python code.\n\n"
+            "Return ONLY the improved Python code.\n"
+            "Do NOT include explanations, comments, markdown, or formatting.\n"
+            "Do NOT wrap in backticks.\n\n"
+            "Code:\n"
             f"{source}\n"
-            "```\n\n"
-            "Suggest improvements to make this code better (performance, readability, best practices).\n"
-            "Return strictly:\n"
-            "1. Short explanation\n"
-            "2. Improved code\n"
         )
 
     try:
         client = AsyncClient(host=OLLAMA_HOST)
 
-        full = ""
-        async for ev in await client.chat(
+        res = await client.chat(
             model=OLLAMA_MODEL,
             messages=[{"role": "user", "content": prompt}],
-            stream=True,
-        ):
-            full += ev["message"]["content"]
+            stream=False,  # critical change
+        )
+        content = res["message"]["content"].strip()
+
+        # remove accidental markdown/code fences
+        if content.startswith("```"):
+            content = content.split("```")
+            content = "\n".join([c for c in content if c.strip() and not c.strip().startswith("python")]).strip()
 
         return {
-            "suggestion": full.strip()
+            "suggestion": content
         }
+
+        # return {
+        #     "suggestion": res["message"]["content"].strip()
+        # }
+
     except Exception as e:
         raise HTTPException(500, f"Failed to generate suggestion: {str(e)}")
+
+# # web socket
+# @router.post("/suggest")
+# async def suggest_fix(req: NBSuggestReq):
+#     p = _safe_nb_path(req.path)
+#     nb = _read_nb(p)
+
+#     idx = req.cell_index
+#     if idx < 0 or idx >= len(nb.cells):
+#         raise HTTPException(400, f"Invalid cell_index: {idx}")
+
+#     cell = nb.cells[idx]
+
+#     source = cell.source or ""
+#     outputs = cell.get("outputs", [])
+#     output_text = _outputs_to_text(outputs)
+
+#     # Build the prompt based on whether there's an error or not
+#     if output_text and ("error" in output_text.lower() or "traceback" in output_text.lower()):
+#         prompt = (
+#             "You are debugging a Jupyter notebook cell.\n\n"
+#             "Cell source:\n"
+#             "```python\n"
+#             f"{source}\n"
+#             "```\n\n"
+#             "Cell output / error:\n"
+#             "```\n"
+#             f"{output_text}\n"
+#             "```\n\n"
+#             "Explain the root cause and propose a corrected version of the code.\n"
+#             "Return strictly:\n"
+#             "1. Short explanation\n"
+#             "2. Corrected code only\n"
+#         )
+#     else:
+#         prompt = (
+#             "You are reviewing a Jupyter notebook cell.\n\n"
+#             "Cell source:\n"
+#             "```python\n"
+#             f"{source}\n"
+#             "```\n\n"
+#             "Suggest improvements to make this code better (performance, readability, best practices).\n"
+#             "Return strictly:\n"
+#             "the code that the user give but with your fix already implemented\n"
+#         )
+
+#     try:
+#         client = AsyncClient(host=OLLAMA_HOST)
+
+#         full = ""
+#         async for ev in await client.chat(
+#             model=OLLAMA_MODEL,
+#             messages=[{"role": "user", "content": prompt}],
+#             stream=True,
+#         ):
+#             full += ev["message"]["content"]
+
+#         return {
+#             "suggestion": full.strip()
+#         }
+#     except Exception as e:
+#         raise HTTPException(500, f"Failed to generate suggestion: {str(e)}")

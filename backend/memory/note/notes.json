@@ -9,9 +9,9 @@
   {
     "id": "fbef66c0-c1c5-4704-9550-b736e371a3dd",
     "title": "sapusugi update list",
-    "content": "<ol><li>run backendnnya pake uvicorn</li><li class=\"ql-indent-1\">uvicorn main:app --reload --host 0.0.0.0 --port 8000</li><li>nyalain ollama docker yang ada modelnya klo bisa qwen</li><li>cd ke frontend trs \"npm run dev\"</li><li>token buat jupyterlabnya \"<span style=\"color: rgb(206, 145, 120);\">tokentolkien\"</span></li><li>ini command buat command running jupyternya klo local</li></ol><p>jupyter lab \\</p><p>&nbsp;--ip=0.0.0.0 \\</p><p>&nbsp;--port=8888 \\</p><p>&nbsp;--no-browser \\</p><p>--NotebookApp.token=tokentolkien</p><p><br></p><p><br></p><p>contoh pemakaian gambar</p><p><br></p><p><img src=\"https://media.cake.me/image/upload/c_limit,w_240/f_auto/q_auto/v1680468704/wvj6mbjqogtnoldpfhzq.jpg?_a=BAVAUaDW0\" alt=\"Meet Nirbana's Talents | Cake | Cake\"></p>",
+    "content": "<p><br></p>",
     "created_at": "2026-01-20T03:19:25Z",
-    "updated_at": "2026-02-13T06:52:56Z"
+    "updated_at": "2026-03-17T15:14:56Z"
   },
   {
     "id": "8090182e-ffd5-4840-badf-6d064205bf5f",

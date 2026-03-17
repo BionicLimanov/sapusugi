@@ -17,6 +17,7 @@ from schemas import (
     SourcesUpdate
 )
 from notebooks import router as notebook_router
+from crawl4ai import AsyncWebCrawler
 
 # ---------------- config ----------------
 
@@ -52,6 +53,40 @@ def _save(path, data):
 notes = _load(NOTE_FILE, [])
 chat = _load(CHAT_FILE, [{"role": "system", "content": "Be concise."}])
 sources = _load(SOURCE_FILE, [])
+
+# ---------- real crawl4ai in use----------
+async def crawl_urls(urls: list[str]) -> str:
+    """
+    Crawl up to 3 URLs and return combined markdown text.
+    """
+    context_blocks = []
+
+    try:
+        async with AsyncWebCrawler() as crawler:
+            for url in urls[:3]:
+                try:
+                    result = await crawler.arun(url=url)
+                    content = ""
+
+                    if hasattr(result, "markdown") and result.markdown:
+                        content = result.markdown
+                    elif hasattr(result, "extracted_content"):
+                        content = result.extracted_content or ""
+
+                    if content:
+                        # Trim to prevent context explosion
+                        content = content[:6000]
+                        context_blocks.append(f"[Source: {url}]\n{content}")
+
+                except Exception as e:
+                    context_blocks.append(f"[Source: {url} ERROR: {str(e)}]")
+
+    except Exception:
+        return ""
+
+    return "\n\n".join(context_blocks)
+
+
 
 
 # ---------------- app ----------------
@@ -152,15 +187,29 @@ async def ws_chat(ws: WebSocket):
                 urls = data.get("urls", [])
 
                 # Add user message to chat history
-                chat.append({"role": "user", "content": msg})
+                # chat.append({"role": "user", "content": msg})
 
-                # Prepare context (you can extend this with crawl/pg logic)
                 context_prefix = ""
+
+                # ---- Crawl4AI integration ----
                 if use_crawl and urls:
-                    context_prefix = f"[Using web search with sources: {', '.join(urls[:3])}]\n\n"
+                    crawl_text = await crawl_urls(urls)
+                    if crawl_text:
+                        context_prefix += "[Web search results]\n\n"
+                        context_prefix += crawl_text + "\n\n"
+
+                # ---- Database integration placeholder ----
                 if use_pg:
                     context_prefix += "[Using database context]\n\n"
+                    # TODO: inject real DB context here
 
+                # Final user message (single append only)
+                final_user_message = context_prefix + msg
+
+                chat.append({
+                    "role": "user",
+                    "content": final_user_message
+                })
                 # Stream response from Ollama
                 client = AsyncClient(host=OLLAMA_HOST)
                 full = ""

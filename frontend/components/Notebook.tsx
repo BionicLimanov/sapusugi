@@ -1,6 +1,9 @@
 'use client'
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import CodeMirror from '@uiw/react-codemirror'
+import { python } from '@codemirror/lang-python'
+import { oneDark } from '@codemirror/theme-one-dark'
 
 /* =========================
    Types
@@ -197,7 +200,21 @@ export default function Notebook() {
   /* =========================
      Sugisuggest (LLM hook)
      ========================= */
+  // async function sugisuggest(cellIndex: number) {
+  //   const r = await safeJSON<{ suggestion: string }>(`${API_BASE}/nb/suggest`, {
+  //     method: 'POST',
+  //     headers: { 'content-type': 'application/json' },
+  //     body: JSON.stringify({
+  //       path,
+  //       cell_index: cellIndex,
+  //     }),
+  //   })
+
+  //   alert(r.suggestion)
+  // }
   async function sugisuggest(cellIndex: number) {
+    if (!nb) return
+
     const r = await safeJSON<{ suggestion: string }>(`${API_BASE}/nb/suggest`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -205,9 +222,30 @@ export default function Notebook() {
         path,
         cell_index: cellIndex,
       }),
-    })
+    },6000)
 
-    alert(r.suggestion)
+    const suggestion = (r.suggestion || '').trim()
+    if (!suggestion) return
+
+    const next = structuredClone(nb)
+    const cell = next.cells[cellIndex]
+
+    const source =
+      typeof cell.source === 'string'
+        ? cell.source
+        : (cell.source || []).join('')
+
+    const commentBlock =
+      `\n\n# ===== SUGGESTION =====\n` +
+      suggestion
+        .split('\n')
+        .map((line) => `# ${line}`)
+        .join('\n') +
+      `\n# ======================\n`
+
+    cell.source = source + commentBlock
+
+    setNb(next)
   }
 
   /* =========================
@@ -356,12 +394,19 @@ export default function Notebook() {
             </div>
 
             {/* Cell Content */}
-            <textarea
-              className="w-full min-h-[120px] bg-black/50 border border-gray-800 rounded-lg p-3 text-sm font-mono text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent resize-y"
-              value={typeof c.source === 'string' ? c.source : c.source?.join('') ?? ''}
-              onChange={(e) => updateCellSource(i, e.target.value)}
-              placeholder={c.cell_type === 'code' ? '# Write your code here...' : 'Write markdown...'}
-            />
+          <CodeMirror
+            value={typeof c.source === 'string' ? c.source : c.source?.join('') ?? ''}
+            height="auto"
+            theme={oneDark}
+            extensions={[python()]}
+            onChange={(value) => updateCellSource(i, value)}
+            basicSetup={{
+              lineNumbers: true,
+              foldGutter: true,
+              highlightActiveLine: true,
+            }}
+            className="border border-gray-800 rounded-lg overflow-hidden"
+          />
 
             {/* Cell Output */}
             {c.cell_type === 'code' && <OutputView outputs={c.outputs || []} />}
